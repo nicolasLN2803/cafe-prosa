@@ -1,24 +1,33 @@
-const form = document.getElementById("contact-form");
+const form = document.querySelector(".contact-form");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const dados = {
-    nome: document.getElementById("nome").value,
-    email: document.getElementById("email").value,
-    mensagem: document.getElementById("mensagem").value
-  };
+  const nome = form.querySelector("input[placeholder='Seu nome']").value;
+  const email = form.querySelector("input[placeholder='Seu email']").value;
+  const mensagem = form.querySelector("textarea").value;
 
-  const resposta = await fetch("http://127.0.0.1:5000/contato", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(dados)
-  });
+  try {
+    const response = await fetch(
+      "https://cafe-prosa-backend.onrender.com/contato",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, email, mensagem })
+      }
+    );
 
-  const resultado = await resposta.json();
-  alert(resultado.mensagem);
+    const data = await response.json();
 
-  form.reset();
+    if (response.ok) {
+      alert("Mensagem enviada com sucesso ☕💬");
+      form.reset();
+    } else {
+      alert(data.erro || "Erro ao enviar mensagem");
+    }
+  } catch (err) {
+    alert("Erro de conexão com o servidor");
+  }
 });
